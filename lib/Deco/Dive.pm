@@ -208,7 +208,7 @@ In the docs directory you will find an extensive treatment of decompression theo
 
 =head1 AUTHOR
 
-Jaap Voets, E<lt>voets@blinck.netE<gt>
+Jaap Voets, E<lt>narked@xperience-automatisering.nlE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

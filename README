@@ -1,16 +1,11 @@
 Deco version 0.01
 =================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+The Deco package can be used to simulate tissue behaviour during scuba diving.
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+WARNING !!!
+
+Do not base your actual dives on the values obtained from this software. It has been written for educational and fun purposes only and has NOT BEEN BACKED by any dives made.
 
 INSTALLATION
 
@@ -25,11 +20,13 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+   Test::More
+   Test::Exception
+   GD::Graph
+
+You can force install the package without the Test::* modules available. The GD::Graph module is only needed when you want to use the Dive::plot package.
 
 COPYRIGHT AND LICENCE
-
-Put the correct copyright and licence information here.
 
 Copyright (C) 2006 by Jaap Voets
 

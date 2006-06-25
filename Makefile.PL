@@ -10,7 +10,7 @@ WriteMakefile(
     },
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Deco.pm', # retrieve abstract from module
-       AUTHOR         => 'Jaap Voets <voets@xperience-automatisering.nl>') : ()),
+       AUTHOR         => 'Jaap Voets <narked@xperience-automatisering.nl>') : ()),
     LIBS              => [''], # e.g., '-lm'
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
     INC               => '-I.', # e.g., '-I. -I/usr/include/other'
