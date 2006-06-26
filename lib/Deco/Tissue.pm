@@ -289,6 +289,7 @@ sub safe_depth {
 
 # calculate how long this tissue is allowed to stay at the current depth
 # without getting into Deco
+# note: time is returned in minutes
 sub nodeco_time {
     my $self = shift;
     my %opt = @_;
@@ -389,6 +390,27 @@ This module can be used to mimick the behaviour of a theoretical body tissue whe
 =item $tissue->info()
 
 Returns a string with information about initial settings and current state of the tissue
+
+=item $tissue->nodeco_time( gas => 'n2' );
+
+Calculates the time left in minutes before a tissue has reached the critical surface tension. 
+In that case you can no longer return directly to the surface but will need to stop at a certain depth first.
+ 
+=item $tissue->safe_depth( gas => 'n2' );
+
+Returns the safe depth in meters to which you can ascend without exceeding one of the critical tissue tensions.
+These values are positive or 0. A value of 0 means you can surface without having any deco stops.
+
+ 
+=item $tissue->M( depth => $depth );
+
+Get the M-value for the specified depth. The M-value for sea-level is the famous M0. At depth you are allowed to
+have a greater tissue tension, which scales linearly with the depth.
+
+ 
+=item $tissue->k( );
+
+Returns the k-parameter (kind of the reverse of the tissue halftime)
 
 =back
 

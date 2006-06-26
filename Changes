@@ -1,5 +1,8 @@
 Revision history for Perl extension Deco.
 
+0.03  2006-06-26
+      Finished POD. Checked Makefile.PL and cleaned up email addresses.
+
 0.01  Thu May  4 17:22:07 2006
 	- original version; created by h2xs 1.23 with options
 		-A -c -n Deco

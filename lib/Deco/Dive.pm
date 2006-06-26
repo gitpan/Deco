@@ -1,8 +1,7 @@
 #######################################
 # Module  : Deco::Dive.pm
 # Author  : Jaap Voets
-# Date    : 027-05-2006
-# Version : 0.1
+# Date    : 27-05-2006
 #######################################
 package Deco::Dive;
 
@@ -116,7 +115,9 @@ sub simulate {
     my $self = shift;
     my %opt  = @_;
 
-    my $model = lc($opt{model}) || 'haldane';
+    # model passed to us takes precedence, if that is not present
+    # we see if the model was already set, otherwise we default to haldane
+    my $model = lc($opt{model}) || $self->{model} || 'haldane';
     croak "Invalid model $model" unless grep { $_ eq $model } @MODELS;
     
     # first load the model
@@ -176,8 +177,8 @@ Dive - Simulate a dive and corresponding tissues
     use Deco::Dive;
 my $dive = new Deco::Dive( );
 $dive->load_data_from_file( file => $file);
-
-$dive->simulate( model => 'haldane');
+$dive->model( config => '/path/to/my/model.cnf' );
+$dive->simulate( );
 
 
 =head1 DESCRIPTION
@@ -195,6 +196,18 @@ After simulating, you can retrieve info in several ways from the dive.
 =item $dive->load_data_from_file( file => $file , timefield => 0, depthfield => 1, timefactor => 1, separator => ';');
 
 Load data from a csv file. You HAVE to specify the filename. Additional options are timefield, the 0 based field number where the  timestamps are stored. Depthfield, field number where the depth (in meters is stored), separator, the fieldseparator and timefactor, the factor to multiply the time field with to transform them to seconds.
+
+=item $dive->model( model => 'padi', config => $file );
+
+Set the model to use. If you specify one of the known models and the config dir has been set right,
+then the method will load the corresponding config file and set up the tissues for this model.
+
+Alternatively you can specify your own config file to use.
+
+=item $dive->simulate( model => 'haldane' );
+
+This method does the simulation for all tissues for the chosen model. It will run along all the time and depth
+points of the dive and calculate gas loading for all the tissues of the model.
 
 =back
 

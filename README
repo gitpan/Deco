@@ -1,4 +1,4 @@
-Deco version 0.01
+Deco version 0.03
 =================
 
 The Deco package can be used to simulate tissue behaviour during scuba diving.
@@ -23,6 +23,7 @@ This module requires these other modules and libraries:
    Test::More
    Test::Exception
    GD::Graph
+   Config::General
 
 You can force install the package without the Test::* modules available. The GD::Graph module is only needed when you want to use the Dive::plot package.
 

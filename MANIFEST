@@ -1,7 +1,9 @@
 Changes
 Makefile.PL
+Config.PL
 MANIFEST
 README
+t/data/dive.txt
 t/Deco-Tissue.t
 t/Deco-Dive.t
 t/Deco-Dive-Plot.t

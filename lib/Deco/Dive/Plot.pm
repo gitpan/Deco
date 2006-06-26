@@ -2,7 +2,6 @@
 # Module  : Deco::Dive::Plot.pm
 # Author  : Jaap Voets
 # Date    : 02-06-2006
-# Version : 0.1
 #######################################
 package Deco::Dive::Plot;
 
@@ -75,6 +74,8 @@ sub pressures {
 }
 
 # plot a certain info series for all tissues
+# after simulating a dive, there are arrays of information setup
+# throught this routine you can get the series of each info
 sub _info {
     my $self = shift;
     my $what = shift; # one of no_deco, safe_depth, percentage or pressure
@@ -133,27 +134,31 @@ Dive - Simulate a dive and corresponding tissues
 =head1 SYNOPSIS
 
     use Deco::Dive;
+    use Deco::Dive::Plot;
+    
 my $dive = new Deco::Dive( );
 $dive->load_data_from_file( file => $file);
-
 $dive->simulate( model => 'haldane');
 
+	my $diveplot = new Deco::Dive::Plot( dive => $dive );
 
 =head1 DESCRIPTION
 
-The Dive model can be used to simulate a dive. You add data points, set some properties and call the simulate method to calculate the entire dive.
-
-After simulating, you can retrieve info in several ways from the dive.
-
+This package will plot the profile of the dive and internal pressures of the tissues of the model.
 
 
 =head2 METHODS
 
 =over 4
 
-=item $dive->load_data_from_file( file => $file , timefield => 0, depthfield => 1, timefactor => 1, separator => ';');
+=item $diveplot->depth( width=> $width, height => $height, file => $file );
 
-Load data from a csv file. You HAVE to specify the filename. Additional options are timefield, the 0 based field number where the  timestamps are stored. Depthfield, field number where the depth (in meters is stored), separator, the fieldseparator and timefactor, the factor to multiply the time field with to transform them to seconds.
+Plots the depth versus time graph of the dive. It will default to a file called depth.png in 
+the current directory, with a size of 600 x 400 pixels.
+
+=item $diveplot->pressures( width=> $width, height => $height, file => $file );
+
+This method will plot the internal pressures of all the tissues of the model during the dive.
 
 =back
 
