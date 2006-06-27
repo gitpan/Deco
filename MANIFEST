@@ -12,9 +12,9 @@ lib/Deco.pm
 lib/Deco/Tissue.pm
 lib/Deco/Dive.pm
 lib/Deco/Dive/Plot.pm
-bin/haldane.pl
-bin/plot.pl
+bin/diveplot.pl
 docs/Deco.tex
 docs/Deco.pdf
 conf/haldane.cnf
+conf/foobar.cnf
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -11,7 +11,7 @@ use Carp;
 use GD::Graph::lines;
 use GD::Graph::bars;
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 # some constants used 
 use constant DEFAULT_WIDTH  => 600;
@@ -70,7 +70,16 @@ sub pressures {
     my $self = shift;
     my %opt  = @_;
 
+    $opt{y_label} = 'Internal Pressure (bar)';
     $self->_info( 'pressure',  %opt );
+}
+
+sub nodeco {
+    my $self = shift;
+    my %opt  = @_;
+
+    $opt{y_label} = 'No deco time (minutes)';
+    $self->_info( 'nodeco_time',  %opt );
 }
 
 # plot a certain info series for all tissues
@@ -78,8 +87,8 @@ sub pressures {
 # throught this routine you can get the series of each info
 sub _info {
     my $self = shift;
-    my $what = shift; # one of no_deco, safe_depth, percentage or pressure
-    my %opt  =@_;
+    my $what = shift; # one of nodeco_time, safe_depth, percentage or pressure
+    my %opt  = @_;
 
     my @times = @{ $self->{dive}->{timepoints} };
     croak "There are no timestamps set for this dive" if ( scalar( @times ) == 0);
@@ -91,10 +100,11 @@ sub _info {
     my $height = $opt{height} || DEFAULT_HEIGHT;
     my $outfile = $opt{file}  || $what . '.png';
     
+    my $y_label = $opt{y_label} || 'Depth (meter)';
     my $graph =  GD::Graph::lines->new($width, $height);
     $graph->set(
 		x_label           => 'Time (minutes)',
-		y_label           => 'Depth (meter)',
+		y_label           => $y_label,
 		title             => "$what profile",
 		) or die $graph->error;
     
@@ -136,11 +146,13 @@ Dive - Simulate a dive and corresponding tissues
     use Deco::Dive;
     use Deco::Dive::Plot;
     
-my $dive = new Deco::Dive( );
-$dive->load_data_from_file( file => $file);
-$dive->simulate( model => 'haldane');
+    my $dive = new Deco::Dive( );
+    $dive->load_data_from_file( file => $file);
+    $dive->simulate( model => 'haldane');
 
-	my $diveplot = new Deco::Dive::Plot( dive => $dive );
+    my $diveplot = new Deco::Dive::Plot( dive => $dive );
+    $diveplot->depth( file => 'depth.png' );
+    $diveplot->pressures( file => 'pressures.png' );
 
 =head1 DESCRIPTION
 
@@ -159,6 +171,10 @@ the current directory, with a size of 600 x 400 pixels.
 =item $diveplot->pressures( width=> $width, height => $height, file => $file );
 
 This method will plot the internal pressures of all the tissues of the model during the dive.
+
+=item $diveplot->nodeco( width=> $width, height => $height, file => $file );
+
+This method will plot the no deco time during the dive for each tissue
 
 =back
 

@@ -1,4 +1,5 @@
 model = Haldane
+name  = Original Haldane
 
 # tissue are specified by
 # halftime in minutes

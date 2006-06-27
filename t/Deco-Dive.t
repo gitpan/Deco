@@ -1,4 +1,4 @@
-use Test::More tests => 12;
+use Test::More tests => 14;
 use Test::Exception;
 
 my $Class = 'Deco::Dive';
@@ -8,8 +8,11 @@ use_ok($Class);
 my $dive = new $Class ( configdir => './conf' );
 isa_ok( $dive, $Class, "Creating dive");
 
-# croak on wrong model
-throws_ok { $dive->model( model => 'Foobar' ) } qr/Invalid model/ , "Wrong model";
+# croak on missing parameters
+throws_ok { $dive->model( ) } qr/specify the config file or model/ , "Missing parameters";
+
+# croak on non existing config file
+throws_ok { $dive->model( model => 'Foobar2' ) } qr/The file .+ does not exist/ , "Model without config file";
 
 # set a right model
 my $model = 'haldane';
@@ -18,7 +21,8 @@ ok( $dive->model( model => $model, config => $file ), "can set a $model model");
 
 my $tissue = $dive->{tissues}[2];
 isa_ok( $tissue, 'Deco::Tissue', "Tissue 2 is a Deco::Tissue");
-is( $dive->{model}, 'Haldane', "Model name Haldane is correct");
+is( $dive->{model}, 'haldane', "Model haldane is correct");
+is( $dive->{model_name}, 'Original Haldane', "Model name is correct");
 
 # croak on missing data
 throws_ok { $dive->simulate( model => 'FooBar' ) } qr/Invalid model/ , "Wrong model";

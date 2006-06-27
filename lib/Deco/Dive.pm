@@ -36,7 +36,8 @@ sub new {
     $self->{config_dir} = $args{configdir} || '.';
 
     # theoretical tissue model we'll be using
-    $self->{model}      = '';
+    $self->{model}        = '';
+    $self->{model_name}   = '';
     bless $self, $class;
     
     return $self;
@@ -79,21 +80,34 @@ sub load_data_from_file {
 
 # pick a model and load the corresponding config
 # this will create a list of tissues
+# either specify a config file and read the model from there
+#  - or - specify a model and read in the default file
 sub model {
     my $self = shift;
     my %opt  = @_;
 
-    my $model = lc($opt{model}) || 'haldane';
-    croak "Invalid model $model" unless grep { $_ eq $model } @MODELS;
-
-    my $config_file = $opt{config};
+    my ($config_file, $model);
+    if ( $opt{config} ) {
+	$config_file = $opt{config};
+	# model will be read from config
+    } elsif ( $opt{model} ) {
+	$model = lc( $opt{model} );
+	$config_file = $self->{config_dir} . "/$model.cnf";
+    } else {
+	croak "Please specify the config file or model to use!";
+    }
 
     # load the config
     my $conf   = new Config::General(  -ConfigFile => $config_file,  -LowerCaseNames => 1 );
     my %config = $conf->getall;
  
+    $model = lc($config{model});
+
     # remember the model we use
-    $self->{model} = $config{model};
+    $self->{model}      = $model;
+    $self->{model_name} = $config{name};
+
+    croak "Invalid model $model" unless grep { $_ eq $model } @MODELS;
     
     # cleanup first
     $self->{tissues} = ();

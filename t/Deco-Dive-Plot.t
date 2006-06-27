@@ -1,4 +1,4 @@
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Test::Exception;
 
 my $Class = 'Deco::Dive::Plot';
@@ -35,3 +35,11 @@ if (-e $file) {
 }
 $diveplot->pressures( file => $file);
 ok( -e $file, "Pressures graph created ok");
+
+# do the no_deco graph
+$file = 'no_deco_time.png';
+if (-e $file) {
+   unlink($file);
+}
+$diveplot->nodeco( file => $file);
+ok( -e $file, "No deco graph created ok");

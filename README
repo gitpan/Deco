@@ -1,7 +1,9 @@
-Deco version 0.03
+Deco version 0.04
 =================
 
 The Deco package can be used to simulate tissue behaviour during scuba diving.
+
+This is very much work in progress. Results are by far not stable yet.
 
 WARNING !!!
 
