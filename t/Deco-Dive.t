@@ -40,5 +40,8 @@ is( $depths[0], 0,  "Starting depth is 0 meter");
 
 is( $times[4], 120,  "4th point is 120 seconds");
 is( $depths[4], 3.9,  "and 3.9 meter");
+# 
+# simulate
+$dive->simulate();
 
 

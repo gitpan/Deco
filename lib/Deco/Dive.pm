@@ -11,7 +11,7 @@ use Carp;
 use Config::General;
 use Deco::Tissue;
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 our @MODELS = ('haldane', 'padi', 'usnavy');
 
@@ -160,8 +160,10 @@ sub simulate {
 	    $tissue->point( $time, $depth );
 	    
 	    # we like to have 
-	    # no_deco time
-	    $self->{info}->{$num}->{$time}->{nodeco_time}    =  $tissue->nodeco_time();
+	    # no_deco time, is special, it can return - for not applicable
+	    my $nodeco = $tissue->nodeco_time();
+	    $nodeco = undef if $nodeco eq '-';
+	    $self->{info}->{$num}->{$time}->{nodeco_time}    = $nodeco; 
 
 	    # safe depth
 	    $self->{info}->{$num}->{$time}->{safe_depth} =  $tissue->safe_depth();

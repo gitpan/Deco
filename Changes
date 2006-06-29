@@ -1,5 +1,8 @@
 Revision history for Perl extension Deco.
 
+0.05  2006-06-29
+      Made test case more robust, changed nodeco_time handling
+
 0.03  2006-06-26
       Finished POD. Checked Makefile.PL and cleaned up email addresses.
 

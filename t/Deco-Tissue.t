@@ -1,4 +1,7 @@
-use Test::More tests => 18;
+#
+# $Revision$
+#
+use Test::More tests => 26;
 use Test::Exception;
 
 my $Class = 'Deco::Tissue';
@@ -17,7 +20,7 @@ throws_ok { $tis->time( -10 ) } qr/can not be negative/ , "can't set negative ti
 
 # get internal pressure at start
 my $N2press = 0.741507; # bar at sealevel
-is( $tis->internalpressure(), $N2press, "Starting internal pressure is $N2press");
+is( sprintf( "%.6f", $tis->internalpressure()), $N2press, "Starting internal pressure is $N2press");
 
 # check _depth2pressure
 is( $tis->_depth2pressure(0), 0, "Sea level should be 0 bar");
@@ -31,12 +34,12 @@ is( $tis->ambientpressure(), 3.25, "Ambient pressure at 22.5 meters is 3.25 bar"
 
 # try the alveolar pressure (with default RQ=0.8)
 $tis->depth(0);
-is( $tis->_alveolarPressure(), 0.741507, "Alveolar pressure for 78% N2 is 0.741507 bar at sea level");
+is( sprintf("%.6f", $tis->_alveolarPressure() ), 0.741507, "Alveolar pressure for 78% N2 is 0.741507 bar at sea level");
 
 # now with RQ=0.9 of US navy alveolar pressure
 $tis->depth(0);
 $tis->rq(0.9);
-is( $tis->_alveolarPressure(), 0.735722, "Alveolar pressure for 78% N2 is 0.735722 bar at sea level with RQ of 0.9");
+is( sprintf("%.6f", $tis->_alveolarPressure() ), 0.735722, "Alveolar pressure for 78% N2 is 0.735722 bar at sea level with RQ of 0.9");
 
 # check the M value, at depth 0 it is the same as M0
 is( $tis->M( depth => 0), $tis->{m0}, "M0 value set OK");
@@ -56,9 +59,35 @@ $tis->depth(30);
 $tis->halftime($hlf);
 my $function_ref = $tis->_haldanePressure();
 
-is( &$function_ref(30), 3.06282716206838, "Haldane pressure calculated OK for $hlf minute tissue");
+is( sprintf( "%.6f", &$function_ref(30) ), 3.062827, "Haldane pressure calculated OK for $hlf minute tissue");
 
 # get info
 my $info = $tis->info();
 like($info, qr/= Halftime .*: $hlf/, "Tissue info looks good");
 
+# let's set some depth/time points, point takes time , depth
+my $time  = 60;
+my $depth = 1.5;
+$tis->point( $time, $depth);
+is ($tis->{depth}, $depth, "Depth set OK");
+is ($tis->{time}->{current}, $time, "Time set OK");
+
+$tis->point( 120, 5.6);
+is ($tis->{time}->{previous}, $time, "Previous time remembered");
+is ($tis->{previousdepth}, $depth, "....as well as previous depth");
+
+$tis->point( 200, 5.6);
+is ($tis->{time}->{lastdepthchange}, 120 , "...and time of last depth change");
+
+# test the no_deco function
+# start at 1 meter, 1 second which should give - as no deco time
+my $tis2  =  new Deco::Tissue( halftime => 5, M0 => 3.17, deltaM => 0.180 );
+
+$tis2->point(1, 1);
+is ($tis2->nodeco_time(), '-', 'No deco time as 1 meter');
+# let's go to 30 meters, the 5 minute tissue can stay here indefinitely as well
+$tis2->point(2, 30);
+is ($tis2->nodeco_time(), '-', 'No deco time at 30 meter');
+
+$tis2->point(2, 50);
+is ( sprintf("%.2f", $tis2->nodeco_time()) , '7.02', 'No deco time at 50 meter');

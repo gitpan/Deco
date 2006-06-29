@@ -1,8 +1,8 @@
 #######################################
 # Module  : Tissue.pm
 # Author  : Jaap Voets
-# Date    : 04-05-2006
-# Version : $Log: $
+# Date    : 04-05-2006 
+# $Revision$
 #######################################
 package Deco::Tissue;
 
@@ -299,7 +299,7 @@ sub nodeco_time {
 
     my $k = $self->k();
     # shortcut: take P_no_deco to be M0 (instant go to surface)
-    my $t = 999;
+    my $t = '-';
     
     my $denominator = $self->{$gas}->{pressure} - $p_alv;
     if ( $denominator ) {
