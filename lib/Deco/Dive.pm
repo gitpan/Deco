@@ -2,6 +2,7 @@
 # Module  : Deco::Dive.pm
 # Author  : Jaap Voets
 # Date    : 27-05-2006
+# $Revision$
 #######################################
 package Deco::Dive;
 
@@ -151,6 +152,12 @@ sub simulate {
 	my $depth = $depths[$i];
 	$i++;
 
+	my $nodeco_dive          = 1000000;
+	my $leading_tissue_deco  = '';
+
+	my $safe_depth_dive      = 0;
+	my $leading_tissue_depth = '';
+
 	# loop over all the tissues
 	foreach my $tissue ( @{ $self->{tissues} } ) {
 	    next if ! defined $tissue;
@@ -164,9 +171,20 @@ sub simulate {
 	    my $nodeco = $tissue->nodeco_time();
 	    $nodeco = undef if $nodeco eq '-';
 	    $self->{info}->{$num}->{$time}->{nodeco_time}    = $nodeco; 
+	    if ($nodeco) {
+		if ($nodeco < $nodeco_dive) {
+		    $nodeco_dive         = $nodeco;
+		    $leading_tissue_deco = $tissue->nr();
+		}
+	    }
 
-	    # safe depth
-	    $self->{info}->{$num}->{$time}->{safe_depth} =  $tissue->safe_depth();
+	    # safe depth, meters, positive
+	    my $safe_depth = $tissue->safe_depth();
+	    $self->{info}->{$num}->{$time}->{safe_depth} =  $safe_depth;
+	    if ($safe_depth > $safe_depth_dive) {
+		$safe_depth_dive      = $safe_depth;
+		$leading_tissue_depth = $tissue->nr();
+	    }
 
 	    # percentage filled compared to M0 pressure
 	    $self->{info}->{$num}->{$time}->{percentage} =  $tissue->percentage();
@@ -174,9 +192,47 @@ sub simulate {
 	    # internal pressure
 	    $self->{info}->{$num}->{$time}->{pressure}   = $tissue->internalpressure();
 
+	    # OTU's
+	    $self->{info}->{$num}->{$time}->{pressure}   = $tissue->calculate_otu();
+
 	}
+	if ($nodeco_dive == 1000000) {
+	    $nodeco_dive = '-';
+	}
+	$self->{info}->{dive}->{$time}->{nodeco}             = $nodeco_dive;
+	$self->{info}->{dive}->{$time}->{leadingtissuedeco}  = $leading_tissue_deco;
+	$self->{info}->{dive}->{$time}->{safedepth}          = $safe_depth_dive;
+	$self->{info}->{dive}->{$time}->{leadingtissuedepth} = $leading_tissue_depth;
+
     }
     
+}
+
+# calculate the no-deco time for the dive
+# this will be the smalles value of the nodeco times of
+# the tissues of this model
+#
+# time is minutes, it takes the current depth and time of the tissue
+# second return value is the tissue nr that gave the minimal nodeco_time
+sub _nodeco_time {
+    my $self = shift;
+    # loop over all the tissues
+    my $nodeco_time = 1000000; # start with absurd high value for easy comparing
+    my $tissue_nr   = '';
+    foreach my $tissue ( @{ $self->{tissues} } ) {
+	next if ! defined $tissue;
+	my $time = $tissue->nodeco_time();
+	if ($time ne '-') {
+	    if ($time < $nodeco_time) {
+		$nodeco_time = $time;
+		$tissue_nr   = $tissue->nr();
+	    }
+	}
+    }
+    if ($nodeco_time == 1000000) {
+	$nodeco_time = '-';
+    }
+    return ($nodeco_time, $tissue_nr);
 }
 
 1;
@@ -224,6 +280,10 @@ Alternatively you can specify your own config file to use.
 
 This method does the simulation for all tissues for the chosen model. It will run along all the time and depth
 points of the dive and calculate gas loading for all the tissues of the model.
+
+=item $dive->_nodeco_time( );
+
+Private function, but might be useful. This function will loop over all the tissues of the model, calling the LDeco::Tissue::nodeco_time() function on them. The lowest value will be stored, together with the associated tissue nr.  
 
 =back
 

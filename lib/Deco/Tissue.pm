@@ -9,7 +9,8 @@ package Deco::Tissue;
 use strict;
 use warnings;
 use Carp;
-our $VERSION = '0.3';
+use POSIX qw( pow );
+our $VERSION = '0.4';
 
 # water vapor at 37 degrees celsius (i.e. our lungs)
 use constant WATER_VAPOR_PRESSURE => 0.0627; 
@@ -87,6 +88,9 @@ sub new {
     $self->{time}->{previous} = 0;
     $self->{time}->{lastdepthchange} = 0;
 
+    # oxygen exposure tracking through OTU's
+    $self->{otu}   = 0;
+
     # haldane formula for current parameters, returns a ref to a sub
     $self->{haldane} = $self->_haldanePressure();
 
@@ -117,6 +121,26 @@ sub percentage {
     return ( 100 * $self->internalpressure( gas => $gas) / $self->{m0}) ;
 }
 
+# return the current OTU (Oxygen Toxicity Unit)
+sub otu {
+    my $self = shift;
+    return $self->{otu};
+}
+
+# calculate otu's, should be called after changing depth/time
+# if pO2 > 0.5 then OTU = minutes x ( ( pO2 -0.5 ) / 0.5) ^ 0.83
+sub calculate_otu {
+    my $self = shift;
+    my $minutes = ($self->{time}->{current} - $self->{time}->{previous} ) / 60;
+    my $otu = 0;
+    my $pO2 = $self->ambientpressure() * $self->{o2}->{fraction};
+    if ($pO2 > 0.5) {
+	$otu = $minutes * POSIX::pow( 2 * $pO2 - 1,  0.83);
+    }
+    $self->{otu} += $otu;
+    return $self->{otu};
+}
+
 # set time, depth combination
 # this way we control the order of time/depth changes
 # during descent, we want to change depth first, the time
@@ -141,6 +165,26 @@ sub point {
 	$self->time( $time );
     }
 
+    return 1;
+}
+
+# set gas fractions
+sub gas {
+    my $self = shift;
+    my %gaslist = @_;
+    foreach my $keygas (keys %gaslist) {
+	my $gas = lc($keygas);
+	if (! exists $GASES{$gas} ) {
+	    croak "Can't use gas $gas";
+	}
+	my $fraction = $gaslist{$keygas};
+	# if using percentage, convert to fractions
+	if ($fraction > 1) {
+	    $fraction = $fraction / 100;
+	}
+
+	$self->{$gas}->{fraction} = $fraction;
+    }
     return 1;
 }
 
@@ -236,6 +280,11 @@ sub ambientpressure {
 # print info about tissue
 sub info {
 	my $self = shift;
+	my $gaslist = '';
+	foreach my $gas (keys %GASES) {
+	   $gaslist .= " $gas at " . sprintf("%.1f", 100 * $self->{$gas}->{fraction}) . "%  "; 
+	}
+	
 	my $info = "============================================================
 =   TISSUE INFO
 =
@@ -252,6 +301,8 @@ sub info {
 = M (bar)            : " . $self->M( depth => $self->{depth}) ."
 = Safe depth (m)     : " . $self->safe_depth( gas => 'n2') ."
 = No deco time (min) : " . $self->nodeco_time( gas => 'n2') ."
+= OTU's              : " . $self->{otu} ."
+= Gas list           : $gaslist  
 ===========================================================\n";
 
 	return $info;
@@ -411,6 +462,18 @@ have a greater tissue tension, which scales linearly with the depth.
 =item $tissue->k( );
 
 Returns the k-parameter (kind of the reverse of the tissue halftime)
+
+=item $tissue->otu;
+
+Returns the Oxygen Toxicity Units acquired during the dive sofar.
+
+=item $tissue->calculate_otu;
+
+Update the OTU value. You have to call this function after every time / depth change. It will add the found value to the internal otu counter and return the total value.
+
+=item $tissue->gas(  'n2' => 34, '02' => 0.66 );
+
+Set the fractions or percentages of the gases used. Supported gases  are 'n2', 'o2' and 'he'. You can either enter percentages or fractions. Note that you are responsible for adding up the gases correctly to 100%.
 
 =back
 

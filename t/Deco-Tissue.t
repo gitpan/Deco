@@ -1,7 +1,7 @@
 #
 # $Revision$
 #
-use Test::More tests => 26;
+use Test::More tests => 34;
 use Test::Exception;
 
 my $Class = 'Deco::Tissue';
@@ -72,6 +72,7 @@ $tis->point( $time, $depth);
 is ($tis->{depth}, $depth, "Depth set OK");
 is ($tis->{time}->{current}, $time, "Time set OK");
 
+
 $tis->point( 120, 5.6);
 is ($tis->{time}->{previous}, $time, "Previous time remembered");
 is ($tis->{previousdepth}, $depth, "....as well as previous depth");
@@ -91,3 +92,29 @@ is ($tis2->nodeco_time(), '-', 'No deco time at 30 meter');
 
 $tis2->point(2, 50);
 is ( sprintf("%.2f", $tis2->nodeco_time()) , '7.02', 'No deco time at 50 meter');
+
+# OTU calculations with air
+my $tis3  =  new Deco::Tissue( halftime => 5, M0 => 3.17, deltaM => 0.180);
+is ($tis3->otu(), 0, "Starting with 0 otu's");
+# under 0.5 pO2 otu's do not contribute, at 10 meters pO2 = 0.42
+$tis3->point(1,10);
+$tis3->point(61,10);  # 1 minute at 10 meters
+is( $tis3->calculate_otu(), 0, "10 meters on air does not give otu's");
+
+# now go to 20 meters (pO2 0.63)
+$tis3->point(62,20);
+$tis3->point(182,20); # stay for 2 minutes
+is( sprintf("%.3f", $tis3->calculate_otu()), 0.654, "OTU's look good");
+# are they stored OK
+is( sprintf("%.3f", $tis3->otu()), 0.654, "....and stored as well");
+# let's stay another 4 minutes, this should triple the amount of OTU's
+$tis3->point(422, 20);
+is( sprintf("%.3f", $tis3->calculate_otu()), 1.961, "OTU's added");
+
+
+# let's set some different gases
+$tis3->gas( 'O2' => 55, 'n2'=> 45);
+is($tis3->{'o2'}->{fraction}, 0.55, "O2 fraction is good");
+is($tis3->{'n2'}->{fraction}, 0.45, "as is the N2 fraction");
+throws_ok { $tis3->gas( 'Xe' => 12)  } qr/Can't use gas xe/ , "trying to set unsupported gas";
+
