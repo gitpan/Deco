@@ -1,5 +1,8 @@
 Revision history for Perl extension Deco.
 
+0.07  2006-07-07
+      Added gas functions to tissue and dive, to set the gas mix manually
+
 0.06  2006-07-03
       Added OTU's to Tissue, and setting of gaslist
 

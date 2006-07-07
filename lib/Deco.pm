@@ -3,7 +3,7 @@ package Deco;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 1;
 __END__
@@ -17,6 +17,7 @@ Deco - Module for simulating body tissue during a scuba dive
   use Deco::Dive
   my $dive = Deco::Dive->new( model => 'haldane' );
   $dive->load_data_from_file( file => 'profile.txt' );
+  $dive->gas( 'O2' => 40, 'N2' => 60);	
   $dive->simulate();
 
 =head1 DESCRIPTION

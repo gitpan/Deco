@@ -1,4 +1,4 @@
-use Test::More tests => 14;
+use Test::More tests => 16;
 use Test::Exception;
 
 my $Class = 'Deco::Dive';
@@ -40,6 +40,11 @@ is( $depths[0], 0,  "Starting depth is 0 meter");
 
 is( $times[4], 120,  "4th point is 120 seconds");
 is( $depths[4], 3.9,  "and 3.9 meter");
+
+# set some gases
+$dive->gas( 'O2' => 40, 'n2' => 0.6);
+is ($dive->{tissues}->[1]->{o2}->{fraction}, 0.4 , "02 fraction set allright");
+throws_ok { $dive->gas( 'Xe' => 12)  } qr/Can't use gas xe/ , "trying to set unsupported gas";
 # 
 # simulate
 $dive->simulate();

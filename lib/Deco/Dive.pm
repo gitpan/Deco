@@ -208,6 +208,20 @@ sub simulate {
     
 }
 
+# set gas fractions
+sub gas {
+    my $self = shift;
+    my %gaslist = @_;
+    # just pass it off to each tissue
+    foreach my $tissue ( @{ $self->{tissues} } ) {
+        next if ! defined $tissue;
+
+	# the tissue module will croak on setting wrong gas
+	# just let it bubble up to the calling script from here
+	$tissue->gas( %gaslist );
+    }
+}
+
 # calculate the no-deco time for the dive
 # this will be the smalles value of the nodeco times of
 # the tissues of this model
@@ -285,6 +299,10 @@ points of the dive and calculate gas loading for all the tissues of the model.
 
 Private function, but might be useful. This function will loop over all the tissues of the model, calling the LDeco::Tissue::nodeco_time() function on them. The lowest value will be stored, together with the associated tissue nr.  
 
+=item $dive->gas( 'O2' => 45, 'n2' => 0.55);
+
+Set the gases used during this dive. Currently supported are 02, N2 and He. Enter the fraction of the gas either as real fraction, or as a percentage.
+ 
 =back
 
 =head2 EXPORT
