@@ -68,7 +68,8 @@ A compartment can be characterized by a variable called 'half-time', which is a 
 When you breathe a breathing gas that contains an inert gas (gasses which do not take part in the oxidative metabolism and are not 'used' by the body) 
 like Nitrogen (N2) or Helium (He2), this gas is dissolved in the blood by means of gas exchange in the lungs. Blood takes the dissolved gas to the 
 rest of the bodily tissue. Tissue takes up dissolved gas from the blood. Gas keeps on dissolving in blood and tissue until the partial pressure 
-of the dissolved gas is equal to the partial pressure of the gas breathed in, throughout the entire body. This is called saturation. Rates of saturation vary with different parts of the body. 
+of the dissolved gas is equal to the partial pressure of the gas breathed in, throughout the entire body. This is called saturation. 
+Rates of saturation vary with different parts of the body. 
 The nervous system and spine get saturated very fast (fast tissues), whereas fat and bones saturate very slowly 
 (slow tissues).\\
 
@@ -351,12 +352,18 @@ predicting the partial pressure in the tissues. This pressure is shown in figure
 P_{t4}  \left( t \right)   =  3.08 + [ 0.736 - 3.08 ]  [ 1 - e^{- \frac{\ln(2)}{4}t} ]
 \end{equation}
 
-\includegraphics[scale=0.3]{images/tissue4.png} \vfill
-After 10 minutes at 30 meters, this diver comes up to 20 meters, will stay there for another 5, then goes on to 10 meters for another 5 minutes and finally surfaces. As you can see in figure \ref{fig_tissue4} the pressure increases with the predicted exponential form, untile we decrease the ambient pressure. A distinct ``knack'' in de the graph marks the start of the off-gassing phase.
+\includegraphics[scale=0.6]{images/tissue4.png} \vfill
+After 10 minutes at 30 meters, this diver comes up to 20 meters, will stay there for another 5, then goes on to 10 meters 
+for another 5 minutes and finally surfaces. As you can see in figure \ref{fig_tissue4} the pressure 
+increases with the predicted exponential form, untile we decrease the ambient pressure. A distinct
+ ``knack'' in de the graph marks the start of the off-gassing phase.
 
 \section{Supersaturation limits and M-Values}
 
-So we are now able to calculate inert gas levels and the amount of supersaturation in all tissue compartments of the diver. As we stated a certain amount of supersaturation is allowed, without developing DCS symptoms. In this section we will define limits applying to supersaturation levels. As we will see these limits depend on:
+So we are now able to calculate inert gas levels and the amount of supersaturation in all tissue
+ compartments of the diver. As we stated a certain amount of supersaturation is allowed, without
+  developing DCS symptoms. In this section we will define limits applying to supersaturation levels. 
+  As we will see these limits depend on:
 \begin{itemize}
 \item Type (half-time) of the tissue
 \item Ambient pressure, i.e. the pressure of the breathing gas (depending on depth and atmospheric pressure)
@@ -364,16 +371,22 @@ So we are now able to calculate inert gas levels and the amount of supersaturati
 
 \subsection{Limits according to Haldane}
 
-In 1908 Haldane presented the first model for decompression. He noticed that divers could surface from a depth of 10 meter, without developing DCS. He concluded that the pressure in the tissue can exceed the ambient pressure by a factor of 2. (Actually the factor the partial pressure of the Nitrogen in the body exceeds the ambient pressure is 0.78*2=1.56, as Workman concluded)
+In 1908 Haldane presented the first model for decompression. He noticed that divers could surface from a depth of 10 meter, 
+without developing DCS. He concluded that the pressure in the tissue can exceed the ambient pressure by a factor of 2. 
+(Actually the factor the partial pressure of the Nitrogen in the body exceeds the ambient pressure is 0.78*2=1.56, as Workman concluded)
 
-Haldane used this ratio to construct the first decompression tables. Up to 1960 ratio's were used. Different ratio's were defined by various scientists. In that period most of the US Navy decompression tables were calculated using this method.  
+Haldane used this ratio to construct the first decompression tables. Up to 1960 ratio's were used. Different ratio's were defined by various scientists. 
+In that period most of the US Navy decompression tables were calculated using this method.  
 
 
 \subsection{Workman M-values}
 
-At longer and deeper dives, the ratio limits did not provide enough safety. Further research into supersaturation limits was performed by Robert D. Workman around 1965. Workman performed research for the U.S. Navy Experimental Diving Unit (NEDU). He found that each tissue compartment had a different partial pressure limit, above which DCS symptoms develop. He called this limiting pressure M. He found a linear relationship between this M-value and depth. Hence he defined this relationship as: 
+At longer and deeper dives, the ratio limits did not provide enough safety. Further research into supersaturation limits was performed by 
+Robert D. Workman around 1965. Workman performed research for the U.S. Navy Experimental Diving Unit (NEDU). He found that each tissue compartment had a 
+different partial pressure limit, above which DCS symptoms develop. He called this limiting pressure M. He found a linear relationship between this M-value and depth. 
+Hence he defined this relationship as: 
 \begin{equation}
-M  =  M_0 + \DeltaM d
+M  =  M_0 + \Delta M d
 \label{workman}
 \end{equation}
 
@@ -382,20 +395,57 @@ where
 \begin{itemize}
 \item $M$    Partial pressure limit, for each tissue compartment (bar)
 \item $M_0$    The partial pressure limit at sea level (zero depth), defined for each tissue compartment (bar)
-\item $\DeltaM$   Increase of M per meter depth, defined for each compartment (bar/m)
+\item $\Delta M$   Increase of M per meter depth, defined for each compartment (bar/m)
 \item $d$    Depth (m) 
 \end{itemize}
 
 \section{No-decompression times}
 
-A number of tables, like the PADI RDP express no-decompression times. These are maximum times a diver can stay at a certain depth being able to go to the surface without the need for decompression stops. Based on equation (\ref{haldane}) we can calculate this time for a particular tissue compartment:
+A number of tables, like the PADI RDP express no-decompression times. These are maximum times a diver can stay at a certain depth being able to go to the surface 
+without the need for decompression stops. Based on equation (\ref{haldane}) we can calculate this time for a particular tissue compartment:
 
 \begin{equation}  
 t_{no\_deco}  =   - \frac{1}{k} \ln \left ( \frac{ P_{no\_deco} - P_{alv0} } { P_{t0} - P_{alv0} } \right )
 \label{no_deco_time}
 \end{equation}
 
-Ofcourse we have to calculate this time for every tissue and take the minimum value as limit for the diver to remain at the depth. 
+Ofcourse we have to calculate this time for every tissue and take the minimum value as limit for 
+the diver to remain at the depth. 
+
+\chapter{Oxygen}
+
+Oxygen is the gas that keeps you alive. The human body needs oxygen to generate energy. We can't do very long 
+without it. Oxygen however can also kill you. In certain cases, it becomes poisenous. In recreational diving with
+air you will hardly run into the oxygen limits. If you stick to not going deeper than the advised maximum depth
+of 40 meters and keeping within the no-decompression limits.
+
+\section{CNS}
+There are 2 ways in which oxygen becomes toxic. The first one is directly related to the depth and gas you are breathing.
+When the partial pressure of oxgyen (the $pO_2$) exceeds 1.6 bar, you are at direct risk of convulsing.
+This would be pretty harmless if you weren't submerged. A diver convulsing is bound to lose his regulator and drown.
+So to avoid problems it is advised to keep the $pO_2$ below 1.4 and only use 1.6 when in rest during a decompression stop.
+
+
+\section{Pulmonary Oxygen Toxicity}
+
+When the lungs are exposed to partial oxygen pressures of 0.5 bar or more, they become irritated. This version of
+oxygen toxicity is not life threatening, but a temporary drop in the functioning of your breathing apparatus.
+To track the exposure to high oxygen levels, the \bf{Oxygen Tolerance Units} have been invented. These are defined as:
+\begin{equation}  
+OTU  =   t * \left ( \frac{pO_2 - 0.5} { 0.5 } \right ) ^ { - \frac{5}{6} }     , when pO_2 > 0.5
+\label{otu}
+\end{equation}
+
+where
+
+\begin{itemize}
+\item $pO_2$ partial Oxygen pressure in bar
+\item $t$    time in minutes exposed to the $pO_2$
+\end{itemize}
+
+Depending on how many days in a row you are diving there are limits on the number of OTU's you can acquire.
+
+\section{CNS}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% End Content %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}

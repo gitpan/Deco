@@ -184,6 +184,8 @@ None by default.
 
 =head1 SEE ALSO
 
+L<Deco>, L<Deco::Tissue>, L<Deco::Dive>. L<SCUBA::Table::NoDeco> might be of interest to you as well.
+
 In the docs directory you will find an extensive treatment of decompression theory in the file Deco.pdf. A lot of it has been copied from the www.deepocean.net website.
 
 =head1 AUTHOR
