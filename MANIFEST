@@ -4,6 +4,7 @@ Config.PL
 MANIFEST
 README
 t/data/dive.txt
+t/Buhlmann.t
 t/Deco-Tissue.t
 t/Deco-Dive.t
 t/Deco-Dive-Plot.t
@@ -17,4 +18,5 @@ docs/Deco.tex
 docs/Deco.pdf
 conf/haldane.cnf
 conf/foobar.cnf
+conf/buhlmann.cnf
 META.yml                                 Module meta-data (added by MakeMaker)

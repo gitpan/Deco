@@ -1,4 +1,4 @@
-use Test::More tests => 16;
+use Test::More tests => 20;
 use Test::Exception;
 
 my $Class = 'Deco::Dive';
@@ -48,5 +48,16 @@ throws_ok { $dive->gas( 'Xe' => 12)  } qr/Can't use gas xe/ , "trying to set uns
 # 
 # simulate
 $dive->simulate();
+
+my $dive2 = new Deco::Dive;
+$dive2->point(10, 5.5);  # 10 seconds 5.5 meter
+$dive2->point(40, 7.5);  # 40 seconds 7.5 meter
+
+@times  = @{ $dive2->{timepoints} };
+@depths = @{ $dive2->{depths} };
+is( $times[0], 10,  "Starting time is 10 seconds");
+is( $depths[0], 5.5,  "Starting depth is 5.5 meter");
+is( $times[1], 40,  "then at 40 seconds");
+is( $depths[1], 7.5,  "... we go to 7.5 meter");
 
 

@@ -23,7 +23,7 @@ sub new {
 
     my $self = {};
 
-    # the data points for the dive, bot arrays
+    # the data points for the dive, both arrays
     $self->{timepoints} = [];
     $self->{depths}     = [];
 
@@ -64,6 +64,8 @@ sub load_data_from_file {
     open (IN, $file) || croak "Can't open file $file for reading";
     while (my $line = <IN>) {
 	chomp($line);
+	next if $line =~ /^\s*#/; # skip comment lines
+	next if $line =~ /^\s+$/; # skip empty lines
 	my @fields = split(/$sep/, $line);
 	push @times, $timefactor * $fields[$timefield];
 	my $depth = $fields[$depthfield];
@@ -77,6 +79,14 @@ sub load_data_from_file {
     $self->{depths}     = \@depths;
     $self->{timepoints} = \@times;
     
+}
+
+# set a time, depth point
+sub point {
+    my $self = shift;
+    my ($time, $depth) = @_;
+    push @{ $self->{depths} }, $depth;
+    push @{ $self->{timepoints} }, $time;
 }
 
 # pick a model and load the corresponding config
@@ -228,7 +238,7 @@ sub gas {
 #
 # time is minutes, it takes the current depth and time of the tissue
 # second return value is the tissue nr that gave the minimal nodeco_time
-sub _nodeco_time {
+sub nodeco_time {
     my $self = shift;
     # loop over all the tissues
     my $nodeco_time = 1000000; # start with absurd high value for easy comparing
@@ -295,13 +305,16 @@ Alternatively you can specify your own config file to use.
 This method does the simulation for all tissues for the chosen model. It will run along all the time and depth
 points of the dive and calculate gas loading for all the tissues of the model.
 
-=item $dive->_nodeco_time( );
-
-Private function, but might be useful. This function will loop over all the tissues of the model, calling the LDeco::Tissue::nodeco_time() function on them. The lowest value will be stored, together with the associated tissue nr.  
+=item $dive->nodeco_time();
+This function will loop over all the tissues of the model, calling the LDeco::Tissue::nodeco_time() function on them. The lowest value will be stored, together with the associated tissue nr.  
 
 =item $dive->gas( 'O2' => 45, 'n2' => 0.55);
 
 Set the gases used during this dive. Currently supported are 02, N2 and He. Enter the fraction of the gas either as real fraction, or as a percentage.
+
+=item $dive->point($time, $depth);
+
+Adds a new point to the dive. Use it if you don't want to load data from a file but iterate over your own values. Time should be in seconds, depth in meters.
  
 =back
 

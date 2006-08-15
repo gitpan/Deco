@@ -1,5 +1,9 @@
 Revision history for Perl extension Deco.
 
+0.09  2006-08-15 
+      Added point function to Deco::Dive to set depth points manually. Got the buhlmann config included
+      Tried testing against published buhlmann no stop limits, but results still differ.
+
 0.08  2006-07-10 
       Added suggested links to POD.
 
