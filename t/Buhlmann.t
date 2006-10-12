@@ -17,7 +17,7 @@ my %TEST = ( 12 => 125,
 	42 => 10 );
 
 
-foreach my $depth (keys %TEST ) {
+foreach my $depth (sort keys %TEST ) {
 	my $dive = new Deco::Dive ( configdir => './conf' );
 
 	# load buhlman config

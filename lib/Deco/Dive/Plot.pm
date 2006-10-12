@@ -163,6 +163,10 @@ This package will plot the profile of the dive and internal pressures of the tis
 
 =over 4
 
+=item new( dive => $dive )
+
+The constructor of the class. Takes a required parameter: a Deco::Dive object.
+
 =item $diveplot->depth( width=> $width, height => $height, file => $file );
 
 Plots the depth versus time graph of the dive. It will default to a file called depth.png in 

@@ -282,7 +282,8 @@ sub info {
 	my $self = shift;
 	my $gaslist = '';
 	foreach my $gas (keys %GASES) {
-	   $gaslist .= " $gas at " . sprintf("%.1f", 100 * $self->{$gas}->{fraction}) . "%  "; 
+	    my $fraction = $self->{$gas}->{fraction} || 0;
+	    $gaslist .= " $gas at " . sprintf("%.1f", 100 * $fraction) . "%  "; 
 	}
 	
 	my $info = "============================================================
@@ -438,9 +439,25 @@ This module can be used to mimick the behaviour of a theoretical body tissue whe
 
 =over 4
 
+=item new( halftime => 10, m0 => 1.234, .... )
+
+Constructor of the class. You can create a tissue with specific parameters
+Allowed parameters are:
+halftime
+m0
+deltam
+o2fraction
+waterfactor
+topsidepressure
+offgasfactor
+RQ
+nr
+
 =item $tissue->info()
 
 Returns a string with information about initial settings and current state of the tissue
+
+=item $tissue->rq();
 
 =item $tissue->nodeco_time( gas => 'n2' );
 
@@ -463,6 +480,14 @@ have a greater tissue tension, which scales linearly with the depth.
 
 Returns the k-parameter (kind of the reverse of the tissue halftime)
 
+=item $tissue->nr();
+
+Returns the tissue number as found in the config file for this model.
+
+=item $tissue->halftime();
+
+Returns the halftime (in minutes) of the tissue.
+
 =item $tissue->otu;
 
 Returns the Oxygen Toxicity Units acquired during the dive sofar.
@@ -474,6 +499,29 @@ Update the OTU value. You have to call this function after every time / depth ch
 =item $tissue->gas(  'n2' => 34, '02' => 0.66 );
 
 Set the fractions or percentages of the gases used. Supported gases  are 'n2', 'o2' and 'he'. You can either enter percentages or fractions. Note that you are responsible for adding up the gases correctly to 100%.
+
+=item $tissue->ambientpressure( $depth );
+
+Returns the ambientpressure (in Bar) for the given depth (in meters). In case a depth is not supplied, the last internal depth stored into the tissue object will be used.
+
+=item $tissue->internalpressure( gas => 'n2' );
+
+Returns the internal pressure (in Bar) of the given gas. Of the gas is omitted, nitrogen (N2) will be used.
+
+=item $tissue->percentage( gas => 'n2' );
+
+Returns the percentage of tissue saturation for the given gas (N2 is default when gas parameter is omitted).
+This percentage is the pressure of the gas compared to the allowed M0 surfacing tension.
+
+=item $tissue->point( $time, $depth);
+
+Set a time (in seconds) , depth (in meters) combination for the tissue. Used when entering a dive profile.
+This routine will call the time() and depth() functions. You can call those individually as well, but the point() function
+makes sure that these functions are called in the right order, so that the most conservative calculation will be performed internally.
+
+=item $tissue->time( $seconds )
+
+    Set the time of the the tissue. That is, the dive starts at 0 seconds, and you want to know how much nitrogen the tissue contains after 10 minutes at 20 meters, then you would call $tissue->depth(20) and $tissue->time( 600 );
 
 =back
 

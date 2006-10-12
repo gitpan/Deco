@@ -289,6 +289,10 @@ After simulating, you can retrieve info in several ways from the dive.
 
 =over 4
 
+=item new()
+
+The constructor of the class.
+
 =item $dive->load_data_from_file( file => $file , timefield => 0, depthfield => 1, timefactor => 1, separator => ';');
 
 Load data from a csv file. You HAVE to specify the filename. Additional options are timefield, the 0 based field number where the  timestamps are stored. Depthfield, field number where the depth (in meters is stored), separator, the fieldseparator and timefactor, the factor to multiply the time field with to transform them to seconds.

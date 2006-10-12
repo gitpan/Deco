@@ -1,5 +1,10 @@
 Revision history for Perl extension Deco.
 
+0.10  2006-10-12
+      Started on the Deco::Dive::Table package to produce no decompression limit tables for given depths. 
+      Added the padi config.
+      Documented all public functions, so passing pod-coverage test.
+
 0.09  2006-08-15 
       Added point function to Deco::Dive to set depth points manually. Got the buhlmann config included
       Tried testing against published buhlmann no stop limits, but results still differ.
