@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use Carp;
 use POSIX qw( pow );
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 
 # water vapor at 37 degrees celsius (i.e. our lungs)
 use constant WATER_VAPOR_PRESSURE => 0.0627; 
@@ -348,24 +348,55 @@ sub nodeco_time {
 
     my $gas = lc($opt{gas}) || 'n2';
     my $p_alv = $self->_alveolarPressure( gas => $gas , depth => $self->{depth} );
-
+	
     my $k = $self->k();
     # shortcut: take P_no_deco to be M0 (instant go to surface)
+    # unless a specific pressure was specified (for time_until function)
+    my $p_end = $opt{endpressure} || $self->{m0};
     my $t = '-';
     
     my $denominator = $self->{$gas}->{pressure} - $p_alv;
     if ( $denominator ) {
-	my $nominator = $self->{m0} - $p_alv;
-	my $fraction = $nominator / $denominator;
+		my $nominator = $p_end - $p_alv;
+		my $fraction = $nominator / $denominator;
 
-	if ($fraction > 0 ) {
-	    $t = -1 / $k * log( $fraction );
-	}
+		if ($fraction > 0 ) {
+		    $t = -1 / $k * log( $fraction );
+		}
     } 
     return $t;
 
 }
 
+# calculate how many minutes this tissue
+# can stay at the present depth until the
+# given pressure (in bar) will be reached
+# 
+# this is practically the same as the no_deco_time function
+# but there we take some surfacing pressure 
+sub time_until_pressure {
+	my $self = shift;
+	my %opt = @_;
+
+    my $gas = lc($opt{gas}) || 'n2';
+	my $pressure = $opt{pressure};
+	my $time_until;
+	
+	my $depth = $self->{'depth'};
+	my $current_pressure = $self->{$gas}->{pressure};
+	
+	if ($current_pressure >= $pressure) {
+		# already at or over the wanted pressure
+		$time_until = 0;
+	} else {
+		# how much bar do we need to go?
+		$time_until = $self->no_deco_time( gas => $opt{gas},
+											endpressue => $pressure );
+			
+	}
+	
+	return $time_until;
+}
 
 
 ##########################################
@@ -398,8 +429,8 @@ sub _haldanePressure {
 
     # the time in minutes we have been at this depth, note that internal times are in seconds!
     return sub {
-	my $t = shift;
-	$alveolar + ($tissue_press0 - $alveolar ) * exp( -1 * $self->k() * $t );
+		my $t = shift;
+		$alveolar + ($tissue_press0 - $alveolar ) * exp( -1 * $self->k() * $t );
     }
 	
 }
@@ -521,7 +552,13 @@ makes sure that these functions are called in the right order, so that the most 
 
 =item $tissue->time( $seconds )
 
-    Set the time of the the tissue. That is, the dive starts at 0 seconds, and you want to know how much nitrogen the tissue contains after 10 minutes at 20 meters, then you would call $tissue->depth(20) and $tissue->time( 600 );
+Set the time of the the tissue. That is, the dive starts at 0 seconds, and you want to know how much nitrogen the tissue contains after 10 minutes at 20 meters, then you would call $tissue->depth(20) and $tissue->time( 600 );
+
+=item $tissue->time_until_pressure( gas => 'N2', pressure => 1.34);
+
+Calculates the time in minutes until the provided pressure in bar is reached for the provided gas.
+This function is very similar to the nodeco_time function (in fact it uses that one), but instead of the maximum
+allowed pressure used to calculate the no-deco time, you can provide your own pressure.
 
 =back
 

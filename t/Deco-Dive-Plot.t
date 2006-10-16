@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 7;
 use Test::Exception;
 
 my $Class = 'Deco::Dive::Plot';
@@ -43,3 +43,11 @@ if (-e $file) {
 }
 $diveplot->nodeco( file => $file);
 ok( -e $file, "No deco graph created ok");
+
+# do the percentage graph
+$file = 'percentages.png';
+if (-e $file) {
+   unlink($file);
+}
+$diveplot->percentage( file => $file, width => 650, height => 500);
+ok( -e $file, "Percentages graph created ok");

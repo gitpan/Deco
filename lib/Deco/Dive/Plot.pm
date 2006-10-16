@@ -11,7 +11,7 @@ use Carp;
 use GD::Graph::lines;
 use GD::Graph::bars;
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 # some constants used 
 use constant DEFAULT_WIDTH  => 600;
@@ -65,6 +65,60 @@ sub depth {
     close IMG;
 
 }
+
+# plot the percentage saturation of each tissue
+# this will be a bar graph using the tissue nr for the x-axis
+sub percentage {
+	my $self = shift;	
+	my %opt  = @_;
+	
+	# at what point of the dive do we
+	my $plot_time;
+	if (! defined $opt{time} ) {
+		# take the last one
+		$plot_time = pop @{ $self->{dive}->{timepoints} };
+	} else {
+	    # find the corresponding time in seconds in the time array
+		my $time = 60 * $opt{time}; # time in minutes
+		foreach my $timestamp ( @{ $self->{dive}->{timepoints} } ) {
+			if ($timestamp <= $time ) {
+				$plot_time = $timestamp;
+			}	
+		}	
+	}
+	 
+	# get the data
+	my @nrs;
+	my @percentages;
+	foreach my $tissue ( @{ $self->{dive}->{tissues} } ) {
+		next if ! defined $tissue;
+		my $num  = $tissue->nr;
+		push @nrs, $num;	
+		# peek inside the Dive object to get the precalculated percentages  
+		push @percentages, sprintf('%.0f', $self->{dive}->{info}->{$num}->{$plot_time}->{percentage});
+	}
+    croak "There is nothing to display for this dive" if ( scalar( @percentages ) == 0);
+    
+    my $width  = $opt{width}  || DEFAULT_WIDTH;
+    my $height = $opt{height} || DEFAULT_HEIGHT;
+    my $outfile = $opt{file}  || 'percentage.png';
+	
+	my $graph =  GD::Graph::bars->new($width, $height);
+    $graph->set(
+             x_label           => 'Tissue',
+             y_label           => 'Percentage',
+             title             => 'Tissue saturation',
+	     	 y_min_value       => 0,	
+	    ) or die $graph->error;
+
+    my @data = (\@nrs, \@percentages);
+    my $gd = $graph->plot(\@data) or die $graph->error;
+    open(IMG, ">$outfile") or die $!;
+    binmode IMG;
+    print IMG $gd->png;
+    close IMG;
+}
+
 
 sub pressures {
     my $self = shift;
@@ -175,6 +229,11 @@ the current directory, with a size of 600 x 400 pixels.
 =item $diveplot->pressures( width=> $width, height => $height, file => $file );
 
 This method will plot the internal pressures of all the tissues of the model during the dive.
+
+=item $diveplot->percentage( time => $time, width=> $width, height => $height, file => $file );
+
+This function will plot a bar graph of the pertenage of saturation (o fthe allowed value per tissue).
+You can specify the time in minutes for the point in the dive where you want to see the percentages for.
 
 =item $diveplot->nodeco( width=> $width, height => $height, file => $file );
 
