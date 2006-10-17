@@ -1,4 +1,4 @@
-use Test::More tests => 20;
+use Test::More tests => 23;
 use Test::Exception;
 
 my $Class = 'Deco::Dive';
@@ -19,10 +19,16 @@ my $model = 'haldane';
 $file = "./conf/$model.cnf";
 ok( $dive->model( model => $model, config => $file ), "can set a $model model");
 
-my $tissue = $dive->{tissues}[2];
-isa_ok( $tissue, 'Deco::Tissue', "Tissue 2 is a Deco::Tissue");
+my $nr = 2;
+my $tissue = $dive->tissue( $nr );
+isa_ok( $tissue, 'Deco::Tissue', "Tissue $nr is a Deco::Tissue");
+is ($tissue->nr(), $nr , "   and numbers match");
 is( $dive->{model}, 'haldane', "Model haldane is correct");
 is( $dive->{model_name}, 'Original Haldane', "Model name is correct");
+
+# asking for wrong tissue
+throws_ok { $dive->tissue( 101 )} qr/Tissue nr 101 is unknown/ , "Asking for unknown tissue";
+throws_ok { $dive->tissue() } qr/Please specify a/ , " and forgetting tissue nr";
 
 # croak on missing data
 throws_ok { $dive->simulate( model => 'FooBar' ) } qr/Invalid model/ , "Wrong model";

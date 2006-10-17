@@ -1,7 +1,7 @@
 #
 # $Revision$
 #
-use Test::More tests => 34;
+use Test::More tests => 36;
 use Test::Exception;
 
 my $Class = 'Deco::Tissue';
@@ -91,7 +91,13 @@ $tis2->point(2, 30);
 is ($tis2->nodeco_time(), '-', 'No deco time at 30 meter');
 
 $tis2->point(2, 50);
-is ( sprintf("%.2f", $tis2->nodeco_time()) , '7.02', 'No deco time at 50 meter');
+is ( sprintf("%.0f", $tis2->nodeco_time()) , '7', 'No deco time at 50 meter');
+
+# let's do some time_until calculation
+my $time_until = sprintf('%.0f', $tis2->time_until_pressure( gas => 'n2', pressure => 1.89 ));
+is( $time_until, 3, "time_until calculation is ok");
+$time_until = sprintf('%.0f', $tis2->time_until_pressure( gas => 'n2', pressure => 2.89 ));
+is( $time_until, 6, " and 2nd too");
 
 # OTU calculations with air
 my $tis3  =  new Deco::Tissue( halftime => 5, M0 => 3.17, deltaM => 0.180);
@@ -117,4 +123,5 @@ $tis3->gas( 'O2' => 55, 'n2'=> 45);
 is($tis3->{'o2'}->{fraction}, 0.55, "O2 fraction is good");
 is($tis3->{'n2'}->{fraction}, 0.45, "as is the N2 fraction");
 throws_ok { $tis3->gas( 'Xe' => 12)  } qr/Can't use gas xe/ , "trying to set unsupported gas";
+
 

@@ -92,6 +92,7 @@ sub percentage {
 	my @percentages;
 	foreach my $tissue ( @{ $self->{dive}->{tissues} } ) {
 		next if ! defined $tissue;
+		# fill the X-axis with the tissue numbers
 		my $num  = $tissue->nr;
 		push @nrs, $num;	
 		# peek inside the Dive object to get the precalculated percentages  
@@ -119,7 +120,9 @@ sub percentage {
     close IMG;
 }
 
-
+# create a graph of the internal pressures of each tissue
+# note that you can restrict the tissues displayed by doing something like
+# pressures( tissues => [1, 5, 7] )  to get tissues  1, 5 and 7 instead of all of them
 sub pressures {
     my $self = shift;
     my %opt  = @_;
@@ -136,6 +139,7 @@ sub nodeco {
     $self->_info( 'nodeco_time',  %opt );
 }
 
+
 # plot a certain info series for all tissues
 # after simulating a dive, there are arrays of information setup
 # throught this routine you can get the series of each info
@@ -144,6 +148,11 @@ sub _info {
     my $what = shift; # one of nodeco_time, safe_depth, percentage or pressure
     my %opt  = @_;
 
+    # could be we want to restrict to one or more tissues
+    my @tissues; 
+    if ( defined $opt{tissues} ) {
+	@tissues = @{ $opt{tissues} };
+    }
     my @times = @{ $self->{dive}->{timepoints} };
     croak "There are no timestamps set for this dive" if ( scalar( @times ) == 0);
     
@@ -166,16 +175,21 @@ sub _info {
     push @data, \@minutes; # load the time values
 
     foreach my $tissue ( @{ $self->{dive}->{tissues} } ) {
-	next if ! defined $tissue;   # first array element is empty
-	my $num = $tissue->nr;
-
-	my @y = ();
-	foreach my $time (@times) {
-	    push @y, $self->{dive}->{info}->{$num}->{$time}->{$what};
-	}
-
-	# add the series to the plot data
-	push @data, \@y;
+    	next if ! defined $tissue;   # first array element is empty
+    	my $num = $tissue->nr;
+    
+    	if (scalar(@tissues) > 0) {
+        	# we want to restrict to one or more tissues
+        	# so skip the ones that are not in our tissues list
+            next if ( ! grep ($num, @tissues) );	
+    	}
+    	my @y = ();
+    	foreach my $time (@times) {
+    	    push @y, $self->{dive}->{info}->{$num}->{$time}->{$what};
+    	}
+    
+    	# add the series to the plot data
+    	push @data, \@y;
     }
     
     my $gd = $graph->plot(\@data) or die $graph->error;

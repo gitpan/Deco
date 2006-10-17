@@ -12,7 +12,7 @@ use Carp;
 use Config::General;
 use Deco::Tissue;
 
-our $VERSION = '0.3';
+our $VERSION = '0.4';
 
 our @MODELS = ('haldane', 'padi', 'usnavy');
 
@@ -244,21 +244,38 @@ sub nodeco_time {
     my $nodeco_time = 1000000; # start with absurd high value for easy comparing
     my $tissue_nr   = '';
     foreach my $tissue ( @{ $self->{tissues} } ) {
-	next if ! defined $tissue;
-	my $time = $tissue->nodeco_time();
-	if ($time ne '-') {
-	    if ($time < $nodeco_time) {
-		$nodeco_time = $time;
-		$tissue_nr   = $tissue->nr();
-	    }
-	}
+    	next if ! defined $tissue;
+        my $time = $tissue->nodeco_time();
+    	if ($time ne '-') {
+    	    if ($time < $nodeco_time) {
+    	    	$nodeco_time = $time;
+    		    $tissue_nr   = $tissue->nr();
+    	    }
+    	}
     }
     if ($nodeco_time == 1000000) {
-	$nodeco_time = '-';
+    	$nodeco_time = '-';
     }
     return ($nodeco_time, $tissue_nr);
 }
 
+# return a tissue by number
+sub tissue {
+    my $self =shift;
+    my $tissue_num = shift;
+    
+    croak "Please specify a tissue nr" unless defined $tissue_num;
+    
+    foreach my $tissue ( @{ $self->{tissues} } ) {
+	    next if ! defined $tissue;
+	    if ( $tissue->nr() == $tissue_num ) { 
+            return $tissue;	    
+	    }
+    }
+    
+    # if we make it to here the tissue is not known
+    croak "Tissue nr $tissue_num is unknown";
+}
 1;
 
 
@@ -320,6 +337,10 @@ Set the gases used during this dive. Currently supported are 02, N2 and He. Ente
 
 Adds a new point to the dive. Use it if you don't want to load data from a file but iterate over your own values. Time should be in seconds, depth in meters.
  
+=item $dive->tissue( $tissue_nr );
+
+Returns the tissue as defined in the config by numer $tissue_nr. The function will croak when nothing is found.
+
 =back
 
 =head2 EXPORT

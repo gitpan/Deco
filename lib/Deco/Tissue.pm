@@ -347,55 +347,58 @@ sub nodeco_time {
     my %opt = @_;
 
     my $gas = lc($opt{gas}) || 'n2';
-    my $p_alv = $self->_alveolarPressure( gas => $gas , depth => $self->{depth} );
-	
-    my $k = $self->k();
+
     # shortcut: take P_no_deco to be M0 (instant go to surface)
     # unless a specific pressure was specified (for time_until function)
-    my $p_end = $opt{endpressure} || $self->{m0};
-    my $t = '-';
+    my $p_end = $self->{m0};
+    my $time = $self->time_until_pressure( pressure => $p_end, gas => $gas );
     
-    my $denominator = $self->{$gas}->{pressure} - $p_alv;
-    if ( $denominator ) {
-		my $nominator = $p_end - $p_alv;
-		my $fraction = $nominator / $denominator;
-
-		if ($fraction > 0 ) {
-		    $t = -1 / $k * log( $fraction );
-		}
-    } 
-    return $t;
+    return $time;
 
 }
 
 # calculate how many minutes this tissue
 # can stay at the present depth until the
 # given pressure (in bar) will be reached
-# 
+#  
+# a special case of this function is d
 # this is practically the same as the no_deco_time function
 # but there we take some surfacing pressure 
 sub time_until_pressure {
-	my $self = shift;
-	my %opt = @_;
-
+    my $self = shift;
+    my %opt = @_;
+    
     my $gas = lc($opt{gas}) || 'n2';
-	my $pressure = $opt{pressure};
-	my $time_until;
+    my $pressure = $opt{pressure};
 	
-	my $depth = $self->{'depth'};
-	my $current_pressure = $self->{$gas}->{pressure};
+    # alveolar pressure
+    my $p_alv = $self->_alveolarPressure( gas => $gas , depth => $self->{depth} );
 	
-	if ($current_pressure >= $pressure) {
+    my $k = $self->k();
+    my $time_until = '-';
+    
+    my $depth = $self->{'depth'};
+    my $current_pressure = $self->{$gas}->{pressure};
+    
+    if ($current_pressure >= $pressure) {
 		# already at or over the wanted pressure
 		$time_until = 0;
-	} else {
-		# how much bar do we need to go?
-		$time_until = $self->no_deco_time( gas => $opt{gas},
-											endpressue => $pressure );
-			
-	}
+    } else {
+		my $denominator = $current_pressure - $p_alv;
+	    
+		if ( $denominator ) {
+			my $nominator = $pressure - $p_alv;
+			my $fraction = $nominator / $denominator;
 	
-	return $time_until;
+			if ($fraction > 0 ) {
+			    $time_until = -1 / $k * log( $fraction );
+			    # round it to whole minutes
+			    $time_until = sprintf('%.0f', $time_until);
+			}
+	    } 
+	}
+    
+    return $time_until;
 }
 
 

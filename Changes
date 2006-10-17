@@ -1,5 +1,8 @@
 Revision history for Perl extension Deco.
 
+0.12  2006-10-17
+      Rewrite of Table package to produce no_stop table and full table of repetitive dive groups.
+ 
 0.11  2006-10-16
       Added percentage() function to the Deco::Dive::Plot package to print out percentage saturation graph
       Started on finding time limits for full table with repetitive dive groups
